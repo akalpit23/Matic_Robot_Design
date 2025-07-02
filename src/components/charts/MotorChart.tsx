@@ -1,57 +1,37 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const MotorChart: React.FC = () => {
   const data = [
-    {
-      name: 'Required Motor Torque',
-      value: 2.01,
-      color: '#ef4444'
-    },
-    {
-      name: 'Typical N20 Motor Torque',
-      value: 20,
-      color: '#22c55e'
-    }
+    { name: 'Required Motor Torque', value: 2.01, color: 'bg-red-500', maxValue: 25 },
+    { name: 'Typical N20 Motor Torque', value: 20, color: 'bg-green-500', maxValue: 25 }
   ];
 
-  const CustomBar = (props: any) => {
-    const { fill, ...rest } = props;
-    const fillColor = data.find(item => item.name === rest.payload.name)?.color || fill;
-    return <Bar {...rest} fill={fillColor} />;
-  };
-
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-        <XAxis 
-          dataKey="name" 
-          tick={{ fontSize: 12, fill: '#57534e' }}
-          angle={-45}
-          textAnchor="end"
-          height={80}
-        />
-        <YAxis 
-          tick={{ fontSize: 12, fill: '#57534e' }}
-          label={{ value: 'Torque (mNm)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#57534e', fontWeight: 'bold' } }}
-        />
-        <Tooltip 
-          contentStyle={{
-            backgroundColor: 'rgba(30, 41, 59, 0.9)',
-            border: '1px solid #0d9488',
-            borderRadius: '8px',
-            color: '#f0fdfa'
-          }}
-          formatter={(value) => [`${value} mNm`, 'Torque']}
-        />
-        <Bar 
-          dataKey="value" 
-          shape={CustomBar}
-          radius={[6, 6, 0, 0]}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="w-full h-full flex flex-col justify-center p-4">
+      <div className="space-y-6">
+        {data.map((item, index) => (
+          <div key={index} className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-stone-700">{item.name}</span>
+              <span className="text-sm font-bold text-stone-800">{item.value} mNm</span>
+            </div>
+            <div className="w-full bg-stone-200 rounded-full h-6">
+              <div 
+                className={`h-6 rounded-full ${item.color} transition-all duration-1000 ease-out flex items-center justify-end pr-2`}
+                style={{ width: `${(item.value / item.maxValue) * 100}%` }}
+              >
+                <span className="text-xs text-white font-medium">
+                  {item.value}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 text-xs text-stone-500 text-center">
+        Torque (milli-Newton meters)
+      </div>
+    </div>
   );
 };
 

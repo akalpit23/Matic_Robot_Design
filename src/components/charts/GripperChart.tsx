@@ -1,59 +1,51 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const GripperChart: React.FC = () => {
   const data = [
-    {
-      name: 'Required Holding Force',
-      value: 0.52,
-      color: '#ef4444'
-    },
-    {
-      name: 'Practical Gripping Force',
-      value: 21.4,
-      color: '#22c55e'
-    }
+    { name: 'Required Holding Force', value: 0.52, displayValue: '0.52', color: 'bg-red-500' },
+    { name: 'Practical Gripping Force', value: 21.4, displayValue: '21.4', color: 'bg-green-500' }
   ];
 
-  const CustomBar = (props: any) => {
-    const { fill, ...rest } = props;
-    const fillColor = data.find(item => item.name === rest.payload.name)?.color || fill;
-    return <Bar {...rest} fill={fillColor} />;
-  };
-
+  // Since we have very different scales, we'll use logarithmic-like visual representation
+  const maxValue = Math.max(...data.map(d => d.value));
+  
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
-        <XAxis 
-          dataKey="name" 
-          tick={{ fontSize: 12, fill: '#57534e' }}
-          angle={-45}
-          textAnchor="end"
-          height={80}
-        />
-        <YAxis 
-          scale="log"
-          domain={['dataMin', 'dataMax']}
-          tick={{ fontSize: 12, fill: '#57534e' }}
-          label={{ value: 'Force (Log Scale)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#57534e', fontWeight: 'bold' } }}
-        />
-        <Tooltip 
-          contentStyle={{
-            backgroundColor: 'rgba(30, 41, 59, 0.9)',
-            border: '1px solid #0d9488',
-            borderRadius: '8px',
-            color: '#f0fdfa'
-          }}
-          formatter={(value) => [`${value} N`, 'Force']}
-        />
-        <Bar 
-          dataKey="value" 
-          shape={CustomBar}
-          radius={[6, 6, 0, 0]}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="w-full h-full flex flex-col justify-center p-4">
+      <div className="space-y-6">
+        {data.map((item, index) => (
+          <div key={index} className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-stone-700">{item.name}</span>
+              <span className="text-sm font-bold text-stone-800">{item.displayValue} N</span>
+            </div>
+            <div className="w-full bg-stone-200 rounded-full h-6">
+              <div 
+                className={`h-6 rounded-full ${item.color} transition-all duration-1000 ease-out flex items-center justify-end pr-2`}
+                style={{ 
+                  width: index === 0 ? '8%' : '100%' // Visual representation showing the huge difference
+                }}
+              >
+                <span className="text-xs text-white font-medium">
+                  {item.displayValue}N
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Safety margin indicator */}
+      <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+        <div className="text-center">
+          <div className="text-lg font-bold text-green-700">41.2x</div>
+          <div className="text-xs text-green-600">Safety Margin</div>
+        </div>
+      </div>
+      
+      <div className="mt-2 text-xs text-stone-500 text-center">
+        Force Comparison (Newtons)
+      </div>
+    </div>
   );
 };
 

@@ -1,45 +1,53 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const PowerChart: React.FC = () => {
   const data = [
-    { name: 'Motors (Avg)', value: 5.76, color: '#a7f3d0' },
-    { name: 'Vacuum Pump (Avg)', value: 0.72, color: '#5eead4' },
-    { name: 'Electronics (Avg)', value: 3.0, color: '#14b8a6' }
+    { name: 'Motors (Avg)', value: 5.76, color: 'bg-teal-300', percentage: 0 },
+    { name: 'Vacuum Pump (Avg)', value: 0.72, color: 'bg-teal-500', percentage: 0 },
+    { name: 'Electronics (Avg)', value: 3.0, color: 'bg-teal-700', percentage: 0 }
   ];
 
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  
+  // Calculate percentages
+  data.forEach(item => {
+    item.percentage = (item.value / total) * 100;
+  });
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          innerRadius={60}
-          outerRadius={120}
-          paddingAngle={2}
-          dataKey="value"
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
-          ))}
-        </Pie>
-        <Tooltip 
-          contentStyle={{
-            backgroundColor: 'rgba(30, 41, 59, 0.9)',
-            border: '1px solid #0d9488',
-            borderRadius: '8px',
-            color: '#f0fdfa'
-          }}
-          formatter={(value) => [`${value} W`, 'Power']}
-        />
-        <Legend 
-          verticalAlign="bottom" 
-          height={36}
-          wrapperStyle={{ color: '#44403c', fontSize: '14px' }}
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="w-full h-full flex flex-col justify-center p-4">
+      {/* Circular representation */}
+      <div className="flex justify-center mb-6">
+        <div className="relative w-32 h-32">
+          <div className="absolute inset-0 rounded-full bg-stone-200"></div>
+          <div className="absolute inset-2 rounded-full bg-white flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-lg font-bold text-stone-800">{total.toFixed(1)}</div>
+              <div className="text-xs text-stone-600">Watts</div>
+            </div>
+          </div>
+          {/* Simple pie segments using borders - simplified approach */}
+          <div className="absolute inset-0 rounded-full border-8 border-teal-300" style={{
+            background: `conic-gradient(#7dd3fc 0% ${data[0].percentage}%, #14b8a6 ${data[0].percentage}% ${data[0].percentage + data[1].percentage}%, #0f766e ${data[0].percentage + data[1].percentage}% 100%)`
+          }}></div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="space-y-3">
+        {data.map((item, index) => (
+          <div key={index} className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
+              <span className="text-sm text-stone-700">{item.name}</span>
+            </div>
+            <div className="text-sm font-medium text-stone-800">
+              {item.value}W ({item.percentage.toFixed(1)}%)
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
